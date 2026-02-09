@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: city-pulse-backend-dev
+    ports:
+      - "3001:3001"
+      - "3002:3002"
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/package.json:/app/package.json
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - WS_PORT=3002
+      - FRONTEND_URL=http://localhost:8080
+    restart: unless-stopped
+    networks:
+      - city-pulse-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: city-pulse-frontend-dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:3001
+      - VITE_WS_URL=ws://localhost:3002
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - city-pulse-network
+
+networks:
+  city-pulse-network:
+    driver: bridge

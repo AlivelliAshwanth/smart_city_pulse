@@ -179,6 +179,25 @@ npm run build
 # Output in dist/ directory
 ```
 
+## Docker Deployment
+
+### Quick Start with Docker
+
+```bash
+# Production build
+docker-compose up -d
+
+# Development with hot reload
+docker-compose -f docker-compose.dev.yml up
+```
+
+**Access:**
+- Frontend: http://localhost (production) or http://localhost:8080 (dev)
+- Backend API: http://localhost:3001
+- WebSocket: ws://localhost:3002
+
+See [docs/DOCKER_GUIDE.md](./docs/DOCKER_GUIDE.md) for complete Docker documentation.
+
 ## License
 
 ISC
