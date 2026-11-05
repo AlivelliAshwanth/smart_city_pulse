@@ -9,6 +9,8 @@ import AlertFeed from '@/components/dashboard/AlertFeed';
 import SimulationPanel from '@/components/dashboard/SimulationPanel';
 import { useSensorData } from '@/hooks/useSensorData';
 import type { TimeSeriesPoint } from '@/data/sensorData';
+import { co2History as demoCo2History, turbidityHistory as demoTurbidityHistory } from '@/data/sensorData';
+import { isDemoMode } from '@/demo/demoEngine';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -19,6 +21,12 @@ const Index = () => {
   const [turbidityHistory, setTurbidityHistory] = useState<TimeSeriesPoint[]>([]);
 
   useEffect(() => {
+    if (isDemoMode) {
+      setCo2History(demoCo2History);
+      setTurbidityHistory(demoTurbidityHistory);
+      return;
+    }
+
     // Fetch additional analytics data
     Promise.all([
       fetch(`${API_BASE_URL}/api/analytics/co2`).then(res => res.json()),
@@ -107,6 +115,19 @@ const Index = () => {
       <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="flex-1 flex flex-col min-w-0">
         <DashboardHeader />
+        {isDemoMode && (
+          <div role="status" className="px-4 py-1.5 text-xs text-muted-foreground bg-muted/40 border-b border-border">
+            Demo: all readings are simulated in your browser, with no real sensors.{' '}
+            <a
+              href="https://github.com/AlivelliAshwanth/smart_city_pulse"
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary underline underline-offset-2"
+            >
+              View on GitHub
+            </a>
+          </div>
+        )}
         <main className="flex-1 overflow-y-auto p-4">
           {renderContent()}
         </main>
