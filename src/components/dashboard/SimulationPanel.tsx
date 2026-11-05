@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Play, Pause, RotateCcw, Zap, CloudRain, Factory } from 'lucide-react';
 import { startSimulation, stopSimulation } from '@/services/simulationService';
+import { demoEngine, isDemoMode } from '@/demo/demoEngine';
 import { toast } from 'sonner';
 
 const scenarios = [
@@ -10,7 +11,8 @@ const scenarios = [
 ];
 
 export default function SimulationPanel() {
-  const [running, setRunning] = useState(false);
+  // Stay in sync with the engine when this panel remounts after a tab change.
+  const [running, setRunning] = useState(() => isDemoMode && demoEngine.isRunning());
   const [selected, setSelected] = useState('pollution');
   const [speed, setSpeed] = useState(1);
   const [loading, setLoading] = useState(false);

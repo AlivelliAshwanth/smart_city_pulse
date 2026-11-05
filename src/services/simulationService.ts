@@ -1,3 +1,5 @@
+import { demoEngine, isDemoMode, type Scenario } from '@/demo/demoEngine';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 export interface SimulationRequest {
@@ -6,6 +8,11 @@ export interface SimulationRequest {
 }
 
 export async function startSimulation(scenario: string, speed: number): Promise<void> {
+  if (isDemoMode) {
+    demoEngine.startSimulation(scenario as Scenario, speed);
+    return;
+  }
+
   const response = await fetch(`${API_BASE_URL}/api/simulation/start`, {
     method: 'POST',
     headers: {
@@ -21,6 +28,11 @@ export async function startSimulation(scenario: string, speed: number): Promise<
 }
 
 export async function stopSimulation(): Promise<void> {
+  if (isDemoMode) {
+    demoEngine.stopSimulation();
+    return;
+  }
+
   const response = await fetch(`${API_BASE_URL}/api/simulation/stop`, {
     method: 'POST',
     headers: {

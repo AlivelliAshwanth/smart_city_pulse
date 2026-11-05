@@ -25,7 +25,7 @@ export default function DashboardSidebar({ activeTab, onTabChange }: SidebarProp
             <Activity className="w-4 h-4 text-primary" />
           </div>
           <div className="hidden lg:block">
-            <h1 className="text-sm font-bold text-foreground tracking-tight">CityTwin</h1>
+            <h1 className="text-sm font-bold text-foreground tracking-tight">City Pulse Live</h1>
             <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">Digital Twin v1.0</p>
           </div>
         </div>

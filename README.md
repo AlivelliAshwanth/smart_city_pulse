@@ -2,11 +2,11 @@
 
 **A live "digital twin" dashboard for city water and air quality, with disaster simulations you can run and watch unfold.**
 
-![City Pulse Live dashboard showing a sensor map, alerts and PM2.5 and pH charts](docs/images/dashboard.jpg)
+![City Pulse Live during a pollution simulation, with affected sensors changing color on the map and new alerts in the feed](docs/images/dashboard.jpg)
 
 <!-- TODO before publishing: add the live demo link here once one is deployed. -->
 
-City Pulse Live shows 10 sample sensors on a map of New Delhi and updates their readings every 3 seconds over WebSocket. Trigger a pollution spike, flood or chemical spill, and watch the readings and alerts respond.
+City Pulse Live shows 10 sample sensors on a map of New Delhi and updates their readings every 3 seconds. Trigger a pollution spike, flood or chemical spill, and watch the readings and map respond.
 
 > **Note:** readings are simulated by default, so no hardware is needed to try it. The backend also has HTTP and MQTT ingestion paths for connecting real sensors. See [IoT integration](docs/IOT_INTEGRATION.md).
 
@@ -20,7 +20,20 @@ City Pulse Live shows 10 sample sensors on a map of New Delhi and updates their 
 - **Disaster simulation:** pollution spike, flood or water contamination at 1x to 10x speed
 - **REST API:** sensors, alerts, analytics and simulation control
 
-## Quick start
+## Try the demo locally
+
+The demo runs entirely in your browser, with no backend. Scenarios spread to nearby sensors and raise new alerts as conditions get worse.
+
+```bash
+git clone https://github.com/AlivelliAshwanth/smart_city_pulse.git
+cd smart_city_pulse
+npm install
+npm run dev:demo
+```
+
+Open <http://localhost:8080>. To host it as a static site, run `npm run build:demo` and publish the `dist` folder. On Vercel, importing the repo is enough, because `vercel.json` already sets the build.
+
+## Quick start (full app)
 
 You need Node.js 18 or newer and two terminals.
 
@@ -101,6 +114,7 @@ The backend has `/api/ml/*` endpoints for anomaly detection and forecasting. The
 - [ ] Show anomaly detection in the dashboard
 - [ ] Hosted live demo
 - [ ] Fix the remaining TypeScript errors in the backend
+- [ ] Raise new alerts from the backend during simulations, as the demo does
 
 ## License
 

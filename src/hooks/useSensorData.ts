@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { WaterSensor, AirSensor, Alert, TimeSeriesPoint } from '@/data/sensorData';
+import { pm25History as demoPm25History, phHistory as demoPhHistory } from '@/data/sensorData';
+import { demoEngine, isDemoMode } from '@/demo/demoEngine';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:3002';
@@ -15,6 +17,17 @@ export function useSensorData() {
 
   // Fetch initial data
   useEffect(() => {
+    if (isDemoMode) {
+      setPm25History(demoPm25History);
+      setPhHistory(demoPhHistory);
+      setLoading(false);
+      return demoEngine.subscribe((snapshot) => {
+        setWater(snapshot.water);
+        setAir(snapshot.air);
+        setAlerts(snapshot.alerts);
+      });
+    }
+
     const fetchInitialData = async () => {
       try {
         setLoading(true);
@@ -61,6 +74,8 @@ export function useSensorData() {
 
   // WebSocket connection for real-time updates
   useEffect(() => {
+    if (isDemoMode) return;
+
     let ws: WebSocket | null = null;
     let reconnectTimeout: NodeJS.Timeout;
     let reconnectAttempts = 0;
