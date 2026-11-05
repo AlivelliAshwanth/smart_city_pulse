@@ -1,203 +1,109 @@
 # City Pulse Live
 
-IoT sensor monitoring platform with real-time data visualization and simulation capabilities.
+**A live "digital twin" dashboard for city water and air quality, with disaster simulations you can run and watch unfold.**
 
-## Project Overview
+![City Pulse Live dashboard showing a sensor map, alerts and PM2.5 and pH charts](docs/images/dashboard.jpg)
 
-City Pulse Live is a digital twin platform for monitoring city-wide IoT sensors including water quality and air quality sensors. The platform provides real-time updates via WebSocket, REST API endpoints, and disaster simulation scenarios.
+<!-- TODO before publishing: add the live demo link here once one is deployed. -->
+
+City Pulse Live shows 10 sample sensors on a map of New Delhi and updates their readings every 3 seconds over WebSocket. Trigger a pollution spike, flood or chemical spill, and watch the readings and alerts respond.
+
+> **Note:** readings are simulated by default, so no hardware is needed to try it. The backend also has HTTP and MQTT ingestion paths for connecting real sensors. See [IoT integration](docs/IOT_INTEGRATION.md).
 
 ## Features
 
-- **Real-time Sensor Monitoring**: Water quality (pH, turbidity, TDS, temperature) and air quality (PM2.5, CO₂, NO₂, humidity)
-- **Live Dashboard**: Interactive maps, charts, and tables
-- **Alert System**: Automatic alerts for critical sensor conditions
-- **Disaster Simulation**: Test scenarios for pollution spikes, floods, and contamination
-- **WebSocket Support**: Real-time updates without polling
-- **RESTful API**: Complete backend API for sensor data and analytics
+- **Live updates:** sensor readings are pushed to the browser over WebSocket
+- **City map:** water and air sensors on an interactive Leaflet map, colored by status
+- **Water quality:** pH, turbidity, TDS and temperature
+- **Air quality:** PM2.5, CO₂, NO₂ and humidity
+- **Alerts:** a feed of warning and critical sensor conditions
+- **Disaster simulation:** pollution spike, flood or water contamination at 1x to 10x speed
+- **REST API:** sensors, alerts, analytics and simulation control
 
-## Tech Stack
+## Quick start
 
-### Frontend
-- React + TypeScript
-- Vite
-- Tailwind CSS
-- shadcn-ui components
-- React Router
-- Recharts for data visualization
-- Leaflet for maps
+You need Node.js 18 or newer and two terminals.
 
-### Backend
-- Node.js + Express
-- TypeScript
-- WebSocket (ws)
-- RESTful API
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+ and npm
-- Two terminal windows (one for frontend, one for backend)
-
-### Installation
-
-1. **Clone the repository**
 ```bash
-git clone <repository-url>
-cd city-pulse-live-main
+git clone https://github.com/AlivelliAshwanth/smart_city_pulse.git
+cd smart_city_pulse
 ```
 
-2. **Install Frontend Dependencies**
-```bash
-npm install
-```
+**Terminal 1: backend**
 
-3. **Install Backend Dependencies**
 ```bash
 cd backend
 npm install
-cd ..
-```
-
-### Running the Application
-
-#### Start the Backend Server
-
-In the first terminal:
-```bash
-cd backend
 npm run dev
 ```
 
-The backend will start on:
-- HTTP API: http://localhost:3001
-- WebSocket: ws://localhost:3002
+**Terminal 2: frontend**
 
-#### Start the Frontend
-
-In the second terminal (from project root):
 ```bash
+npm install
 npm run dev
 ```
 
-The frontend will start on http://localhost:8080
+Open <http://localhost:8080>, then scroll to **Disaster Simulation** and press **Run Simulation**.
 
-### Environment Variables
+| Service | Address |
+|---|---|
+| Dashboard | <http://localhost:8080> |
+| REST API | <http://localhost:3001> |
+| WebSocket | `ws://localhost:3002` |
 
-Create a `.env` file in the project root (optional, defaults are provided):
+To change the addresses, create a `.env` file in the project root:
 
 ```env
 VITE_API_URL=http://localhost:3001
 VITE_WS_URL=ws://localhost:3002
 ```
 
-## API Documentation
-
-### Sensors
-- `GET /api/sensors/water` - Get all water sensors
-- `GET /api/sensors/air` - Get all air sensors
-- `GET /api/sensors/:id` - Get specific sensor by ID
-
-### Alerts
-- `GET /api/alerts` - Get all alerts
-
-### Simulation
-- `POST /api/simulation/start` - Start simulation
-  ```json
-  {
-    "scenario": "pollution" | "flood" | "contamination",
-    "speed": 1-10
-  }
-  ```
-- `POST /api/simulation/stop` - Stop simulation and reset
-
-### Analytics
-- `GET /api/analytics/pm25` - PM2.5 time series
-- `GET /api/analytics/ph` - pH time series
-- `GET /api/analytics/co2` - CO₂ time series
-- `GET /api/analytics/turbidity` - Turbidity time series
-
-### Health
-- `GET /health` - Health check
-
-## WebSocket Events
-
-The WebSocket server broadcasts:
-- `sensor_update` - Real-time sensor data updates
-- `alert` - New alert notifications
-- `simulation_start` - Simulation started
-- `simulation_stop` - Simulation stopped
-
-## Project Structure
+## How it works
 
 ```
-city-pulse-live-main/
-├── backend/              # Backend API server
-│   ├── src/
-│   │   ├── routes/      # API routes
-│   │   ├── services/    # Business logic
-│   │   ├── data/        # Initial data
-│   │   └── server.ts    # Express server
-│   └── package.json
-├── src/                 # Frontend React app
-│   ├── components/     # React components
-│   ├── hooks/          # Custom hooks
-│   ├── services/       # API services
-│   └── pages/          # Page components
-└── package.json
+Simulated sensors ──┐
+HTTP / MQTT input ──┼──> Express backend ──REST + WebSocket──> React dashboard
+Disaster scenarios ─┘
 ```
 
-## Development
+## Tech stack
 
-### Backend Development
-```bash
-cd backend
-npm run dev    # Development with hot reload
-npm run build  # Build for production
-npm start      # Run production build
-```
+- **Frontend:** React, TypeScript, Vite, Tailwind CSS, shadcn/ui, Recharts, Leaflet
+- **Backend:** Node.js, Express, TypeScript, `ws`
 
-### Frontend Development
-```bash
-npm run dev      # Development server
-npm run build    # Production build
-npm run preview  # Preview production build
-```
+## API overview
 
-## Building for Production
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `GET` | `/health` | Health check |
+| `GET` | `/api/sensors/water` | All water sensors |
+| `GET` | `/api/sensors/air` | All air sensors |
+| `GET` | `/api/sensors/:id` | One sensor |
+| `GET` | `/api/alerts` | All alerts |
+| `GET` | `/api/analytics/{pm25,ph,co2,turbidity}` | Time series for one metric |
+| `POST` | `/api/simulation/start` | Start a scenario: `{ "scenario": "pollution", "speed": 1 }` |
+| `POST` | `/api/simulation/stop` | Stop the scenario and reset the sensors |
+| `GET` | `/api/simulation/status` | Current simulation state |
 
-### Backend
-```bash
-cd backend
-npm run build
-npm start
-```
+The scenario can be `pollution`, `flood` or `contamination`. See the [full API documentation](docs/API_DOCUMENTATION.md).
 
-### Frontend
-```bash
-npm run build
-# Output in dist/ directory
-```
+**WebSocket events:** `initial_data`, `sensor_update`, `alert`, `simulation_start`, `simulation_stop`
 
-## Docker Deployment
+## Experimental: anomaly detection and forecasting
 
-### Quick Start with Docker
+The backend has `/api/ml/*` endpoints for anomaly detection and forecasting. They aren't connected to the dashboard yet, and they need a history of sensor readings before they return useful results. See [ML models](docs/ML_MODELS.md).
 
-```bash
-# Production build
-docker-compose up -d
+## Roadmap
 
-# Development with hot reload
-docker-compose -f docker-compose.dev.yml up
-```
+<!-- TODO: edit this list to match what you actually plan to do. -->
 
-**Access:**
-- Frontend: http://localhost (production) or http://localhost:8080 (dev)
-- Backend API: http://localhost:3001
-- WebSocket: ws://localhost:3002
-
-See [docs/DOCKER_GUIDE.md](./docs/DOCKER_GUIDE.md) for complete Docker documentation.
+- [ ] Show anomaly detection in the dashboard
+- [ ] Hosted live demo
+- [ ] Fix the remaining TypeScript errors in the backend
 
 ## License
+
+<!-- TODO: add a LICENSE file, then keep this line in sync with it. -->
 
 ISC

@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
-import { WebSocketServer as WS } from 'ws';
+import { WebSocket, WebSocketServer as WS } from 'ws';
 import { sensorService } from './services/sensorService.js';
 import sensorRoutes from './routes/sensors.js';
 import alertRoutes from './routes/alerts.js';
@@ -68,7 +68,7 @@ const server = createServer(app);
 // WebSocket Server
 class WebSocketServer {
   private wss: WS;
-  private clients: Set<WS> = new Set();
+  private clients: Set<WebSocket> = new Set();
 
   constructor(port: number) {
     this.wss = new WS({ port });
@@ -146,7 +146,7 @@ class WebSocketServer {
   broadcast(message: WebSocketMessage): void {
     const data = JSON.stringify(message);
     this.clients.forEach((client) => {
-      if (client.readyState === WS.OPEN) {
+      if (client.readyState === WebSocket.OPEN) {
         client.send(data);
       }
     });
